@@ -69,16 +69,21 @@ def calculate_median(userlist):
     median = statistics.median(degrees)
     return median
 
+# Write median to output file
+def output_median(median,outfile):
+    median_string = '{:3.2f}'.format(median) + '\n'
+    outfile.write(median_string)
+
 # load data
 data = []
 users = {}
 maxtime = 0
 mintime = 0
+median = 0
 outfile = open('venmo_output/output.txt','w')
 
-# Open input file and loop over every line
+# Loop over each line in input file
 with open('venmo_input/venmo-trans.txt') as infile:
-    count = 0
     for line in infile:
 
         # Extract JSON information
@@ -100,6 +105,7 @@ with open('venmo_input/venmo-trans.txt') as infile:
 
         # Skip incomplete entries and expired entries (>60 seconds from max time)
         if curr_time < mintime or not actor or not target:
+            output_median(median,outfile)
             continue
 
         # Connect actor and target to each other
@@ -111,6 +117,5 @@ with open('venmo_input/venmo-trans.txt') as infile:
         # Calculate median
         median = calculate_median(users)
 
-        # Output rolling median to output file
-        median_string = '{:3.2f}'.format(median) + '\n'
-        outfile.write(median_string)
+        # Output median
+        output_median(median,outfile)
